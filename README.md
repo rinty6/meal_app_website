@@ -28,4 +28,4 @@ GoodHealthMate helps users manage their nutrition goals by providing intelligent
    `npm start`
 
 ---
-*Developed by [Your Name]*
+*Developed by Leo*
