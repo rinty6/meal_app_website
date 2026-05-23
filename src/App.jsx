@@ -3,6 +3,16 @@ import { QrCode, Apple, LineChart, Calendar, Award, ShoppingBagIcon, X } from 'l
 
 import goodHealthMateLogo from './assets/GoodHealthMate_logo.png';
 
+const CONTACT_PATH = '/contact-us';
+
+const getRoutedSection = () => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  return window.location.pathname === CONTACT_PATH ? 'contact' : null;
+};
+
 const AboutModalContent = () => (
   <div className="space-y-8">
     <p className="text-lg text-text-secondary leading-relaxed">
@@ -317,13 +327,45 @@ const PrivacyModalContent = () => (
 );
 
 function App() {
-  const [activeSection, setActiveSection] = useState(null);
+  const [activeSection, setActiveSection] = useState(getRoutedSection);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
+
+    const syncSectionFromUrl = () => setActiveSection(getRoutedSection());
+
+    syncSectionFromUrl();
+    window.addEventListener('popstate', syncSectionFromUrl);
+
+    return () => window.removeEventListener('popstate', syncSectionFromUrl);
+  }, []);
 
   const handleSectionToggle = (sectionName) => {
+    if (typeof window !== 'undefined' && window.location.pathname === CONTACT_PATH) {
+      window.history.replaceState({}, '', '/');
+    }
+
     setActiveSection((previousSection) => (previousSection === sectionName ? null : sectionName));
   };
 
-  const closeModal = () => setActiveSection(null);
+  const handleContactLinkClick = (event) => {
+    event.preventDefault();
+    setActiveSection('contact');
+
+    if (typeof window !== 'undefined' && window.location.pathname !== CONTACT_PATH) {
+      window.history.pushState({}, '', CONTACT_PATH);
+    }
+  };
+
+  const closeModal = () => {
+    setActiveSection(null);
+
+    if (typeof window !== 'undefined' && window.location.pathname === CONTACT_PATH) {
+      window.history.replaceState({}, '', '/');
+    }
+  };
 
   const modalContent = {
     about: {
@@ -370,6 +412,14 @@ function App() {
           >
             About
           </button>
+          <a
+            href={CONTACT_PATH}
+            onClick={handleContactLinkClick}
+            aria-expanded={activeSection === 'contact'}
+            className="hover:text-primary transition-colors"
+          >
+            Contact
+          </a>
         </div>
 
         <div className="flex items-center gap-4 text-sm font-medium">
@@ -555,14 +605,14 @@ function App() {
             <h4 className="text-white font-bold mb-4">Support</h4>
             <ul className="space-y-3 text-sm">
               <li>
-                <button
-                  type="button"
-                  onClick={() => handleSectionToggle('contact')}
+                <a
+                  href={CONTACT_PATH}
+                  onClick={handleContactLinkClick}
                   aria-expanded={activeSection === 'contact'}
-                  className="hover:text-white transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                  className="hover:text-white transition-colors"
                 >
                   Contact Us
-                </button>
+                </a>
               </li>
               <li>
                 <button

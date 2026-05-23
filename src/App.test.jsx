@@ -1,7 +1,12 @@
 ﻿import { describe, it, expect } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
+import { beforeEach } from 'vitest'
 import userEvent from '@testing-library/user-event'
 import App from './App'
+
+beforeEach(() => {
+  window.history.replaceState({}, '', '/')
+})
 
 describe('App Component', () => {
   it('should render the navbar with logo and brand name', () => {
@@ -9,7 +14,7 @@ describe('App Component', () => {
 
     const nav = screen.getByRole('navigation')
     expect(within(nav).getByText('GoodhealthMate')).toBeInTheDocument()
-    expect(screen.getAllByText('G').length).toBeGreaterThan(0)
+    expect(within(nav).getByAltText(/goodhealthmate logo/i)).toBeInTheDocument()
   })
 
   it('should render static navbar navigation items', () => {
@@ -19,6 +24,7 @@ describe('App Component', () => {
     expect(within(nav).getByRole('link', { name: /^features$/i })).toHaveAttribute('href', '#features')
     expect(within(nav).getByRole('link', { name: /how it works/i })).toHaveAttribute('href', '#how-it-works')
     expect(within(nav).getByRole('button', { name: /^about$/i })).toBeInTheDocument()
+    expect(within(nav).getByRole('link', { name: /^contact$/i })).toHaveAttribute('href', '/contact-us')
   })
 
   it('should keep modal hidden by default', () => {
@@ -45,10 +51,11 @@ describe('App Component', () => {
     render(<App />)
 
     const footer = screen.getByText(/all rights reserved/i).closest('footer')
-    await user.click(within(footer).getByRole('button', { name: /^contact us$/i }))
+    await user.click(within(footer).getByRole('link', { name: /^contact us$/i }))
 
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
+    expect(window.location.pathname).toBe('/contact-us')
 
     const emailLinks = within(dialog).getAllByRole('link', { name: 'duongphuthinh2001@gmail.com' })
     expect(emailLinks[0]).toHaveAttribute('href', 'mailto:duongphuthinh2001@gmail.com')
@@ -56,6 +63,24 @@ describe('App Component', () => {
     const sendButton = within(dialog).getByRole('button', { name: /send feedback/i })
     const feedbackForm = sendButton.closest('form')
     expect(feedbackForm).toHaveAttribute('action', 'https://formsubmit.co/duongphuthinh2001@gmail.com')
+  })
+
+  it('should open Contact modal from navbar and expose the support URL', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    const nav = screen.getByRole('navigation')
+    await user.click(within(nav).getByRole('link', { name: /^contact$/i }))
+
+    expect(window.location.pathname).toBe('/contact-us')
+    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
+  })
+
+  it('should open Contact modal when visiting the support URL directly', () => {
+    window.history.replaceState({}, '', '/contact-us')
+    render(<App />)
+
+    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
   })
 
   it('should open Privacy Policy modal from footer', async () => {
@@ -87,7 +112,7 @@ describe('App Component', () => {
     render(<App />)
 
     const footer = screen.getByText(/all rights reserved/i).closest('footer')
-    await user.click(within(footer).getByRole('button', { name: /^contact us$/i }))
+    await user.click(within(footer).getByRole('link', { name: /^contact us$/i }))
     expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
 
     await user.click(within(footer).getByRole('button', { name: /^privacy policy$/i }))
