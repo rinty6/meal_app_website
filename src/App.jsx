@@ -1,7 +1,262 @@
-﻿import React, { useState } from 'react';
-import { QrCode, Apple, LineChart, Calendar, Award, ShoppingBagIcon, X } from 'lucide-react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import {
+  QrCode,
+  Apple,
+  LineChart,
+  Calendar,
+  Award,
+  ShoppingBagIcon,
+  X,
+  Footprints,
+  ArrowLeft,
+  ArrowRight,
+  Play,
+  Pause,
+} from 'lucide-react';
 
 import goodHealthMateLogo from './assets/GoodHealthMate_logo.png';
+import homeScreen from './assets/prototypes/home page.png';
+import calorieSummaryScreen from './assets/prototypes/calorie summary page.png';
+import calorieInsightScreen from './assets/prototypes/calorie insight page.png';
+import mealPlanningScreen from './assets/prototypes/meal planning page.png';
+import recipeScreen from './assets/prototypes/recipe page.png';
+import favoritesScreen from './assets/prototypes/favorites page.png';
+import shoppingListScreen from './assets/prototypes/shopping list page.png';
+import addFoodScreen from './assets/prototypes/add food search results.png';
+import barcodeScreen from './assets/prototypes/barcode scan result.png';
+import profileScreen from './assets/prototypes/profile page.png';
+
+const SCREENS = [
+  {
+    id: 'home',
+    name: 'Daily Dashboard',
+    desc: 'Greet the day with your calorie summary, macros, and quick actions in one glance.',
+    img: homeScreen,
+  },
+  {
+    id: 'calorie-summary',
+    name: 'Calorie Summary',
+    desc: 'Drill into your day — meal-by-meal calorie split, carbs, fats and protein at a glance.',
+    img: calorieSummaryScreen,
+  },
+  {
+    id: 'calorie-insight',
+    name: 'Nutrition Insights',
+    desc: 'Trends and weekly breakdowns help you see where to lean in and where to ease up.',
+    img: calorieInsightScreen,
+  },
+  {
+    id: 'add-food-search',
+    name: 'Add Food',
+    desc: 'Search a database tuned for the Australian shelf — log a meal in seconds.',
+    img: addFoodScreen,
+  },
+  {
+    id: 'barcode-scan',
+    name: 'Barcode Scan',
+    desc: 'Point, scan, log. Instant nutrition pulled straight from the packet.',
+    img: barcodeScreen,
+  },
+  {
+    id: 'meal-planning',
+    name: 'Meal Planning',
+    desc: 'Lay out the week ahead. Drag meals across days and keep your goals in sight.',
+    img: mealPlanningScreen,
+  },
+  {
+    id: 'recipe',
+    name: 'Recipes',
+    desc: 'A library of healthy recipes with macros pre-calculated for your plan.',
+    img: recipeScreen,
+  },
+  {
+    id: 'favorites',
+    name: 'Favorites',
+    desc: 'Save the meals and recipes you keep coming back to — one tap to re-log.',
+    img: favoritesScreen,
+  },
+  {
+    id: 'shopping-list',
+    name: 'Shopping List',
+    desc: 'Your week’s plan, turned into a tidy shopping list you can tick off in-store.',
+    img: shoppingListScreen,
+  },
+  {
+    id: 'profile',
+    name: 'Profile & Goals',
+    desc: 'Personal targets, streaks, and progress — all wrapped in one place.',
+    img: profileScreen,
+  },
+];
+
+const AUTO_MS = 4500;
+const TICK_MS = 50;
+
+const positionFor = (idx, active, total) => {
+  let diff = ((idx - active) % total + total) % total;
+  if (diff > total / 2) diff -= total;
+  if (diff === 0) return 'center';
+  if (diff === -1) return 'left-1';
+  if (diff === 1) return 'right-1';
+  if (diff === -2) return 'left-2';
+  if (diff === 2) return 'right-2';
+  return 'hidden';
+};
+
+function Showcase() {
+  const [active, setActive] = useState(0);
+  const [playing, setPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const total = SCREENS.length;
+  const hoverRef = useRef(false);
+
+  const go = useCallback(
+    (next) => {
+      setActive(((next % total) + total) % total);
+      setProgress(0);
+    },
+    [total],
+  );
+
+  const goRel = useCallback(
+    (delta) => {
+      setActive((cur) => ((cur + delta) % total + total) % total);
+      setProgress(0);
+    },
+    [total],
+  );
+
+  useEffect(() => {
+    if (!playing) return undefined;
+    const id = setInterval(() => {
+      if (hoverRef.current) return;
+      setProgress((p) => {
+        const np = p + (TICK_MS / AUTO_MS) * 100;
+        if (np >= 100) {
+          setActive((cur) => (cur + 1) % total);
+          return 0;
+        }
+        return np;
+      });
+    }, TICK_MS);
+    return () => clearInterval(id);
+  }, [playing, total]);
+
+  useEffect(() => {
+    const onKey = (ev) => {
+      if (ev.key === 'ArrowLeft') goRel(-1);
+      if (ev.key === 'ArrowRight') goRel(1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [goRel]);
+
+  const current = SCREENS[active];
+
+  return (
+    <section id="showcase" className="showcase">
+      <div className="showcase-inner">
+        <div className="showcase-head">
+          <span className="showcase-eyebrow">
+            <span className="dot" />
+            Inside the App
+          </span>
+          <h2 className="showcase-title">
+            Every screen, <em>designed to keep you on track</em>
+          </h2>
+          <p className="showcase-sub">
+            Ten thoughtfully crafted screens that turn calorie tracking into a habit — not a chore.
+          </p>
+        </div>
+
+        <div className="stage-wrap">
+          <button
+            type="button"
+            className="stage-arrow prev"
+            aria-label="Previous screen"
+            onClick={() => goRel(-1)}
+          >
+            <ArrowLeft size={22} strokeWidth={2.4} />
+          </button>
+
+          <div
+            className="stage"
+            onMouseEnter={() => {
+              hoverRef.current = true;
+            }}
+            onMouseLeave={() => {
+              hoverRef.current = false;
+            }}
+          >
+            {SCREENS.map((s, i) => {
+              const pos = positionFor(i, active, total);
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  className="phone"
+                  data-pos={pos}
+                  aria-label={`Show ${s.name}`}
+                  onClick={() => go(i)}
+                >
+                  <div
+                    className="phone-screen"
+                    style={{ backgroundImage: `url("${s.img}")` }}
+                  />
+                </button>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            className="stage-arrow next"
+            aria-label="Next screen"
+            onClick={() => goRel(1)}
+          >
+            <ArrowRight size={22} strokeWidth={2.4} />
+          </button>
+        </div>
+
+        <div className="stage-caption">
+          <span className="step">
+            {String(active + 1).padStart(2, '0')} / {String(total).padStart(2, '0')}
+          </span>
+          <h3 className="name">{current.name}</h3>
+          <p className="desc">{current.desc}</p>
+        </div>
+
+        <div className="progress-row">
+          <button
+            type="button"
+            className="play-btn"
+            aria-label={playing ? 'Pause auto-advance' : 'Resume auto-advance'}
+            onClick={() => setPlaying((p) => !p)}
+          >
+            {playing ? <Pause size={14} /> : <Play size={14} />}
+          </button>
+          <div className="progress-track">
+            <div className="progress-fill" style={{ width: `${progress}%` }} />
+          </div>
+        </div>
+
+        <div className="chip-row">
+          {SCREENS.map((s, i) => (
+            <button
+              key={s.id}
+              type="button"
+              className={`chip${i === active ? ' active' : ''}`}
+              onClick={() => go(i)}
+            >
+              <span className="idx">{i + 1}</span>
+              {s.name}
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 const CONTACT_PATH = '/contact-us';
 
@@ -128,200 +383,262 @@ const ContactModalContent = () => (
 const PrivacyModalContent = () => (
   <div className="space-y-8 text-text-secondary leading-relaxed">
     <div>
-      <p className="text-text-secondary mb-1">Effective Date: March 28, 2026</p>
-      <p className="text-text-secondary">Last Updated: March 28, 2026</p>
+      <p className="text-text-secondary mb-1">
+        <span className="font-semibold text-text-primary">Operator:</span> Phu Thinh Duong
+      </p>
+      <p className="text-text-secondary mb-1">
+        <span className="font-semibold text-text-primary">Last Updated:</span> May 13, 2026
+      </p>
+      <p className="text-text-secondary">
+        <span className="font-semibold text-text-primary">Contact:</span>{' '}
+        <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
+          duongphuthinh2001@gmail.com
+        </a>
+      </p>
     </div>
 
     <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">1. Introduction and Scope</h3>
       <p>
-        This Privacy Policy describes how GoodHealthMate (&quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) collects, uses, and protects your
-        personal information. We operate under a &quot;Privacy by Design&quot; framework to meet the requirements of the
-        Australian Privacy Principles (APPs), the EU/UK GDPR, the EU AI Act, the EU Data Act, and US State laws
-        including the CCPA/CPRA and Washington&apos;s My Health My Data Act.
+        This Privacy Policy explains how GoodHealthMate, operated by Phu Thinh Duong, collects, uses, stores, and
+        shares information when you use the GoodHealthMate mobile app and related meal-planning, recommendation,
+        notification, and food-recognition services.
+      </p>
+    </div>
+
+    <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
+      <h4 className="text-lg font-bold text-text-primary mb-1">Tracking</h4>
+      <p className="text-text-primary italic">
+        &quot;We do not use your personal information for cross-app tracking or targeted advertising.&quot;
+      </p>
+    </div>
+
+    <div>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">1. Who This Policy Covers</h3>
+      <p className="mb-3">
+        This Privacy Policy applies to the GoodHealthMate mobile application and related services operated by Phu Thinh
+        Duong, including connected meal-planning, recommendation, feedback, notification, and food-recognition features
+        that link to this policy.
+      </p>
+      <p>
+        If you use third-party sign-in, nutrition lookup, or notification providers through the app, those providers
+        may also process your information under their own privacy terms. This policy describes our handling of
+        information within the GoodHealthMate service.
       </p>
     </div>
 
     <div>
       <h3 className="text-2xl font-bold text-text-primary mb-3">2. Information We Collect</h3>
-      <p className="mb-4">We collect information that identifies, relates to, or could reasonably be linked to you.</p>
-      <h4 className="text-xl font-bold text-text-primary mb-2">A. Sensitive Personal Information (2026 Definitions)</h4>
-      <ul className="list-disc pl-6 space-y-2 mb-4">
-        <li>
-          <span className="font-semibold text-text-primary">Consumer Health Data (Washington MHMDA): </span>
-          Includes bodily functions, vital signs (heart rate, weight), symptoms, and inferences drawn from your
-          nutrition logs.
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">Neural Data (CCPA/CPA): </span>
-          If you use compatible wearable neurotechnology, we collect information generated by measuring the activity of
-          your central or peripheral nervous system (e.g., EEG data).
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">Biometric Data: </span>
-          Data used for identity verification or health tracking.
-        </li>
-      </ul>
-
-      <h4 className="text-xl font-bold text-text-primary mb-2">B. Device and Technical Data (Australian Smart Device Rules 2025)</h4>
-      <ul className="list-disc pl-6 space-y-2">
-        <li>
-          <span className="font-semibold text-text-primary">Relevant Connectable Product Data: </span>
-          If integrated with a wearable, we collect unique device identifiers and security status.
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">Sensor Data (EU Data Act): </span>
-          Raw and pre-processed sensor data generated by your use of connected hardware.
-        </li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">3. Automated Decision-Making and AI Transparency</h3>
       <p className="mb-3">
-        Our application utilizes Automated Decision-Making Technology (ADMT) to provide personalized calorie and
-        nutrition recommendations.
+        We collect information you provide directly, information created through your use of the app, and limited
+        technical data needed to operate the service.
       </p>
       <ul className="list-disc pl-6 space-y-2">
         <li>
-          <span className="font-semibold text-text-primary">Logic and Purpose: </span>
-          Our algorithms process your age, activity level, and health goals to generate daily targets. This is not
-          &quot;Medical Nutrition Therapy&quot; but informational tracking.
+          <span className="font-semibold text-text-primary">Account and identity information. </span>
+          When you create or use an account, we collect information such as your name, email address, authentication
+          identifiers, and account profile details.
         </li>
         <li>
-          <span className="font-semibold text-text-primary">Significant Decisions: </span>
-          In jurisdictions like California, you have the right to opt-out of ADMT if it is used for &quot;significant
-          decisions.&quot; We do not use ADMT to deny health insurance or medical care.
+          <span className="font-semibold text-text-primary">Profile and health-related information. </span>
+          We collect data such as height, weight, preferred measurement units, gender, date of birth, activity level,
+          nutrition goals, and calorie-goal settings to personalize meal planning and related recommendations.
         </li>
         <li>
-          <span className="font-semibold text-text-primary">AI Marking: </span>
-          Content generated by our AI coach is marked in a machine-readable format as &quot;AI-generated&quot; per the EU AI
-          Act.
+          <span className="font-semibold text-text-primary">Meal-planning and saved-content information. </span>
+          We collect meal logs, saved recipes, favorites, shopping lists, shopping-list items, in-app notification
+          history, and recommendation feedback you submit inside the app.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Food photos and correction submissions. </span>
+          If you use food recognition or submit a correction for a wrong prediction, we may receive and process food
+          images, predicted labels, corrected labels, and related feedback. Correction images may be retained to
+          improve the quality and reviewability of the feature.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Support and feedback information. </span>
+          If you contact us or submit feedback, we collect the content of your message, your email address, your
+          account identifier if provided, and any optional attachments such as screenshots or photos.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Notification and device information. </span>
+          If you enable push notifications, we collect your push token and basic device platform information needed to
+          deliver notifications to your device.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Request-scoped inputs. </span>
+          We process search terms, barcode inputs, recipe lookups, and similar request data when you use those
+          features. We do not currently present a separate stored search-history feature in the app build audited for
+          this policy.
         </li>
       </ul>
     </div>
 
     <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">4. Washington State Consumer Health Data Rights</h3>
-      <p className="mb-3">Under the My Health My Data Act (MHMDA), Washington residents have specific rights:</p>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">3. How We Use Information</h3>
+      <p className="mb-3">We use personal information to operate, maintain, and improve GoodHealthMate.</p>
+      <ul className="list-disc pl-6 space-y-2">
+        <li>To create and manage your account, authenticate you, and keep your profile in sync.</li>
+        <li>To log meals, manage calorie goals, store saved recipes, favorites, and shopping lists.</li>
+        <li>To personalize meal recommendations using your profile, goals, favorites, and feedback.</li>
+        <li>To process food-recognition requests and review or improve correction submissions.</li>
+        <li>To deliver push notifications and render your in-app notification inbox.</li>
+        <li>To respond to customer support and product feedback submissions.</li>
+        <li>To secure the service, diagnose operational issues, and comply with legal obligations.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">4. When We Share Information</h3>
+      <p className="mb-3 text-text-primary italic">
+        &quot;We do not sell your personal information. We share information only when needed to provide the service,
+        comply with the law, or protect rights and safety.&quot;
+      </p>
       <ul className="list-disc pl-6 space-y-2">
         <li>
-          <span className="font-semibold text-text-primary">Double Opt-In: </span>
-          We require separate, explicit consent to collect your health data and a second, distinct consent to share it.
+          <span className="font-semibold text-text-primary">Authentication providers. </span>
+          We use Clerk and related authentication services to create and manage user accounts and sign-in sessions.
         </li>
         <li>
-          <span className="font-semibold text-text-primary">Right to Delete: </span>
-          You may request the absolute deletion of your health data, including all backups and archives.
+          <span className="font-semibold text-text-primary">Infrastructure and service providers. </span>
+          We use hosting, database, storage, email, and backend infrastructure providers to run the app and its
+          related services.
         </li>
         <li>
-          <span className="font-semibold text-text-primary">Geofencing Prohibition: </span>
-          We do not utilize geofencing within 2,000 feet of any healthcare facility to track or target users.
+          <span className="font-semibold text-text-primary">Notification providers. </span>
+          If you enable push notifications, your push token is processed through the notification services needed to
+          deliver alerts.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Support providers. </span>
+          Feedback submissions may be delivered through email providers such as Resend, Gmail SMTP, or another
+          configured email service.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Food and nutrition services. </span>
+          If you use food lookup or similar features, relevant request data may be sent to the third-party food or
+          nutrition service used to return those results, such as the FatSecret platform integration used by the app.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Recommendation and food-recognition processing. </span>
+          Profile, meal, and feedback data may be processed by our recommendation or food-recognition services so the
+          app can return personalized results or image classifications.
+        </li>
+        <li>
+          <span className="font-semibold text-text-primary">Legal and safety disclosures. </span>
+          We may disclose information if required by law or if reasonably necessary to protect users, the service, or
+          the public.
         </li>
       </ul>
     </div>
 
     <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">5. California Privacy Rights (CCPA 2026)</h3>
-      <ul className="list-disc pl-6 space-y-2">
-        <li>
-          <span className="font-semibold text-text-primary">Neural Data Opt-Out: </span>
-          You have the right to limit the use of your neural data to only what is necessary for the app&apos;s primary
-          function.
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">Expanded Right to Know: </span>
-          You may request access to personal information collected since January 1, 2022, even if it exceeds the
-          traditional 12-month window.
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">Global Privacy Control (GPC): </span>
-          We automatically honor GPC signals as a valid opt-out of the &quot;sale&quot; or &quot;sharing&quot; of your data.
-        </li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">6. Australian Cyber Security &amp; Consumer Protections</h3>
-      <ul className="list-disc pl-6 space-y-2">
-        <li>
-          <span className="font-semibold text-text-primary">Security Update Support: </span>
-          We commit to providing security updates for this application and its integrations until at least March 28,
-          2029. This support period will not be shortened.
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">No Default Passwords: </span>
-          Our app requires you to set a unique, complex password upon registration; we never use universal default
-          credentials.
-        </li>
-        <li>
-          <span className="font-semibold text-text-primary">Vulnerability Disclosure: </span>
-          If you discover a security flaw, please report it to our security team at{' '}
-          <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-            duongphuthinh2001@gmail.com
-          </a>
-          . We will acknowledge receipt within 48 hours.
-        </li>
-      </ul>
-    </div>
-
-    <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">7. EU/UK Data Portability (Data Act 2025/26)</h3>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">5. Tracking and Advertising</h3>
+      <p className="mb-3">
+        GoodHealthMate does not use your name, email, user profile, device information, or other personal information
+        for third-party tracking, cross-app tracking, data-broker sharing, or targeted advertising.
+      </p>
       <p>
-        Under the EU Data Act, you have a right to access &quot;raw and pre-processed sensor data&quot; generated by your
-        connected devices and have us transmit that data to a third-party service of your choice without delay and free
-        of charge.
+        In the app build audited for this policy, we did not identify third-party ad SDKs, cross-app tracking SDKs, or
+        App Tracking Transparency flows in the mobile app or backend package manifests reviewed on May 13, 2026.
       </p>
     </div>
 
     <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">8. Prohibition of Dark Patterns</h3>
-      <p className="mb-3">We strictly adhere to the FTC&apos;s &quot;Click-to-Cancel&quot; rule and ACCC guidelines.</p>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">6. How Long We Keep Information</h3>
+      <p className="mb-3">
+        We keep information for as long as reasonably necessary to provide the service, maintain records, comply with
+        legal obligations, resolve disputes, and improve the product.
+      </p>
       <ul className="list-disc pl-6 space-y-2">
+        <li>Account and profile information is generally retained while your account remains active.</li>
         <li>
-          <span className="font-semibold text-text-primary">Symmetry of Effort: </span>
-          Canceling your subscription is as easy as signing up. We do not use &quot;confirm shaming&quot; or hidden &quot;save&quot;
-          loops.
+          Meal logs, saved recipes, favorites, calorie goals, shopping lists, and recommendation feedback are retained
+          until deleted, overwritten, or no longer needed for the service.
+        </li>
+        <li>Push tokens may be retained until they are refreshed, invalidated, or removed from your account.</li>
+        <li>Feedback emails and attachments may be retained for support, troubleshooting, and product-improvement records.</li>
+        <li>
+          Food-recognition correction images and related logs may be retained in feedback storage until they are
+          manually removed or no longer needed for review and improvement.
+        </li>
+        <li>Backups and short-lived logs may continue to exist for a limited period after deletion requests are processed.</li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">7. Your Choices and Rights</h3>
+      <p className="mb-3">
+        Depending on where you live, you may have rights to access, correct, delete, or export personal information we
+        hold about you.
+      </p>
+      <ul className="list-disc pl-6 space-y-2">
+        <li>You can update some account and profile details inside the app.</li>
+        <li>You can disable push notifications in your device settings or inside app settings where available.</li>
+        <li>
+          <span className="text-text-primary italic">
+            &quot;You can request access, correction, export, or deletion by contacting us at{' '}
+            <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
+              duongphuthinh2001@gmail.com
+            </a>
+            .&quot;
+          </span>
         </li>
         <li>
-          <span className="font-semibold text-text-primary">Transparency: </span>
-          All pricing and renewal terms are disclosed clearly before you provide consent.
+          If you want us to review a privacy request, please include enough information for us to verify your account
+          and understand the request.
         </li>
       </ul>
     </div>
 
     <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">9. Contact and Redress</h3>
-      <p className="mb-3">To exercise your rights or file a complaint:</p>
-      <ul className="list-disc pl-6 space-y-2">
-        <li>
-          <span className="font-semibold text-text-primary">Email: </span>
-          <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-            duongphuthinh2001@gmail.com
-          </a>
-        </li>
-      </ul>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">8. Security</h3>
+      <p>
+        We use reasonable administrative, technical, and organizational measures designed to protect personal
+        information. No method of transmission or storage is completely secure, so we cannot guarantee absolute
+        security.
+      </p>
     </div>
 
     <div>
-      <h3 className="text-2xl font-bold text-text-primary mb-3">Implementation Guidance for your UI/UX Team</h3>
-      <ul className="list-disc pl-6 space-y-2">
-        <li>
-          The &quot;Washington Link&quot;: Ensure the link &quot;Consumer Health Data Privacy Policy&quot; is separate from the main
-          &quot;Privacy Policy&quot; link on your footer.
-        </li>
-        <li>
-          ADMT Pre-Use Notice: Before a user accesses the AI calorie coach for the first time, a pop-up must explain
-          the logic and provide an opt-out.
-        </li>
-        <li>
-          Statement of Compliance: Under the Australian Rules, you must include a digital &quot;Statement of Compliance&quot;
-          accessible within the app settings.
-        </li>
-        <li>
-          No &quot;Reject All&quot; Friction: The &quot;Reject All&quot; button on your cookie/consent banner must be as prominent and
-          easy to click as the &quot;Accept All&quot; button to avoid ACCC/FTC dark pattern penalties.
-        </li>
-      </ul>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">9. Children&apos;s Privacy</h3>
+      <p>
+        GoodHealthMate is not intended for children under the age of 16, or a higher minimum age where required by
+        local law, unless a parent or guardian has authorized use where legally permitted. If you believe a child has
+        provided personal information to us in violation of this section, contact us at{' '}
+        <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
+          duongphuthinh2001@gmail.com
+        </a>
+        .
+      </p>
+    </div>
+
+    <div>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">10. International Transfers</h3>
+      <p>
+        Your information may be processed in countries other than the one where you live, including countries where
+        our service providers operate. Where required by applicable law, we rely on appropriate safeguards for such
+        transfers.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">11. Changes to This Policy</h3>
+      <p>
+        We may update this Privacy Policy from time to time. If we make material changes, we will update the date at
+        the top of this page and may provide additional notice inside the app or through other reasonable means.
+      </p>
+    </div>
+
+    <div>
+      <h3 className="text-2xl font-bold text-text-primary mb-3">12. Contact Us</h3>
+      <p>
+        GoodHealthMate is operated by Phu Thinh Duong. If you have questions, support requests, or privacy requests,
+        contact us at{' '}
+        <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
+          duongphuthinh2001@gmail.com
+        </a>
+        .
+      </p>
     </div>
   </div>
 );
@@ -435,7 +752,7 @@ function App() {
           <div className="md:w-1/2 flex flex-col items-start text-left">
             <h1 className="text-5xl md:text-6xl font-bold text-text-primary leading-[1.1] mb-6">
               Reach Your Goals with <br className="hidden md:block" />
-              GoodhealthMate
+              <span className="gradient-text">GoodhealthMate</span>
             </h1>
             <p className="text-lg text-text-secondary mb-8 max-w-lg leading-relaxed">
               Track your daily meals, monitor your nutrition, and achieve lasting results. Join thousands who have
@@ -468,7 +785,9 @@ function App() {
       {/* 3. FEATURES SECTION */}
       <section id="features" className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-text-primary mb-4">Everything You Need to Succeed</h2>
+          <h2 className="text-4xl font-bold text-text-primary mb-4">
+            Everything You Need to <span className="gradient-text">Succeed</span>
+          </h2>
           <p className="text-text-secondary text-lg mb-16">Powerful tools to help you reach your fitness goals</p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
@@ -528,7 +847,9 @@ function App() {
       {/* 4. HOW IT WORKS SECTION */}
       <section id="how-it-works" className="py-24 px-6 bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-4xl font-bold text-text-primary mb-16">How It Works</h2>
+          <h2 className="text-4xl font-bold text-text-primary mb-16">
+            How It <span className="gradient-text">Works</span>
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
             <div className="hidden md:block absolute top-8 left-[15%] right-[15%] h-0.5 bg-border z-0"></div>
@@ -560,13 +881,62 @@ function App() {
         </div>
       </section>
 
-      {/* 5. BOTTOM CTA BANNER */}
-      <section className="bg-primary py-20 px-6 text-center text-white">
-        <h2 className="text-4xl font-bold mb-4">Start Your Transformation Today</h2>
-        <p className="text-blue-100 text-lg mb-8 max-w-2xl mx-auto">Join who have reached their goals with GoodhealthMate.</p>
-        <button className="bg-white text-primary font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-gray-50 transition-colors">
-          Download the App Now
-        </button>
+      {/* 5. EVERY SCREEN SHOWCASE (3D carousel) */}
+      <Showcase />
+
+      {/* 6. GET STARTED AT THE FOODPRINT */}
+      <section id="get-started" className="bg-primary py-24 px-6 text-white relative overflow-hidden">
+        <div className="absolute -top-20 -right-20 opacity-10 pointer-events-none">
+          <Footprints size={320} />
+        </div>
+        <div className="absolute -bottom-16 -left-10 opacity-10 pointer-events-none rotate-12">
+          <Footprints size={220} />
+        </div>
+
+        <div className="max-w-5xl mx-auto relative">
+          <div className="text-center">
+            <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider bg-white/15 px-3 py-1.5 rounded-full mb-5">
+              <Footprints size={14} /> Your Foodprint
+            </span>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">Get started at the foodprint</h2>
+            <p className="text-blue-100 text-lg max-w-2xl mx-auto mb-10">
+              Take the first step toward a smaller, smarter foodprint. Set your goal, scan your first meal, and let
+              GoodhealthMate map the path one day at a time.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+            {[
+              { step: '01', title: 'Set your goal', body: 'Tell us your target — weight, energy, or balance.' },
+              { step: '02', title: 'Log your first meal', body: 'Scan a barcode or pick from the Aussie database.' },
+              { step: '03', title: 'Walk your foodprint', body: 'Watch trends shape up across the week.' },
+            ].map((item) => (
+              <div
+                key={item.step}
+                className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 text-left"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-2xl font-bold text-blue-100">{item.step}</span>
+                  <Footprints size={18} className="text-blue-100" />
+                </div>
+                <h3 className="font-bold text-white text-lg">{item.title}</h3>
+                <p className="text-blue-100 text-sm mt-1">{item.body}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button className="bg-white text-primary font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-gray-50 transition-colors">
+              Download the App Now
+            </button>
+            <a
+              href="#features"
+              className="text-white font-semibold underline-offset-4 hover:underline"
+            >
+              Explore features first
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* 6. FOOTER */}
@@ -641,7 +1011,7 @@ function App() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="info-modal-title"
-            className="w-full max-w-6xl max-h-[92vh] bg-[#F9F7EE] border border-gray-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden"
+            className="w-full max-w-6xl max-h-[92vh] bg-white border border-gray-200 rounded-3xl shadow-2xl flex flex-col overflow-hidden"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 px-6 md:px-8 pt-6 pb-5 border-b border-gray-200">

@@ -92,7 +92,8 @@ describe('App Component', () => {
 
     const dialog = screen.getByRole('dialog')
     expect(within(dialog).getByRole('heading', { name: /privacy policy: goodhealthmate/i })).toBeInTheDocument()
-    expect(within(dialog).getByText(/effective date: march 28, 2026/i)).toBeInTheDocument()
+    expect(within(dialog).getByText(/last updated:/i)).toBeInTheDocument()
+    expect(within(dialog).getAllByText(/may 13, 2026/i).length).toBeGreaterThan(0)
   })
 
   it('should close modal when close button is clicked', async () => {
