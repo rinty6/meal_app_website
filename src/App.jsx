@@ -782,7 +782,10 @@ function App() {
         </div>
       </section>
 
-      {/* 3. FEATURES SECTION */}
+      {/* 3. EVERY SCREEN SHOWCASE (3D carousel) */}
+      <Showcase />
+
+      {/* 4. FEATURES SECTION */}
       <section id="features" className="py-24 px-6 bg-white">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-text-primary mb-4">
@@ -844,7 +847,7 @@ function App() {
         </div>
       </section>
 
-      {/* 4. HOW IT WORKS SECTION */}
+      {/* 5. HOW IT WORKS SECTION */}
       <section id="how-it-works" className="py-24 px-6 bg-gray-50 border-t border-gray-100">
         <div className="max-w-5xl mx-auto text-center">
           <h2 className="text-4xl font-bold text-text-primary mb-16">
@@ -880,9 +883,6 @@ function App() {
           </div>
         </div>
       </section>
-
-      {/* 5. EVERY SCREEN SHOWCASE (3D carousel) */}
-      <Showcase />
 
       {/* 6. GET STARTED AT THE FOODPRINT */}
       <section id="get-started" className="bg-primary py-24 px-6 text-white relative overflow-hidden">
