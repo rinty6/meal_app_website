@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { QRCodeSVG } from 'qrcode.react';
 import {
-  QrCode,
   Apple,
   LineChart,
   Calendar,
@@ -740,9 +740,14 @@ function App() {
         </div>
 
         <div className="flex items-center gap-4 text-sm font-medium">
-          <button className="bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-blue-600 transition-colors">
+          <a
+            href="https://apps.apple.com/app/id6766896814"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-primary text-white px-5 py-2.5 rounded-lg hover:bg-blue-600 transition-colors"
+          >
             Download App
-          </button>
+          </a>
         </div>
       </nav>
 
@@ -761,14 +766,25 @@ function App() {
 
             {/* QR Code Call to Action */}
             <div className="bg-white p-4 rounded-xl shadow-sm border border-border flex items-center gap-5">
-              <div className="w-24 h-24 bg-gray-50 flex flex-col items-center justify-center border-2 border-dashed border-border rounded-lg text-text-secondary">
-                <QrCode size={32} />
-                <span className="text-[10px] uppercase tracking-wider mt-1 font-bold">Scan Me</span>
-              </div>
+              <a
+                href="https://apps.apple.com/app/id6766896814"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0"
+                aria-label="Download GoodHealthMate on the App Store"
+              >
+                <QRCodeSVG
+                  value="https://apps.apple.com/app/id6766896814"
+                  size={96}
+                  bgColor="#ffffff"
+                  fgColor="#1a1a2e"
+                  level="M"
+                />
+              </a>
               <div>
-                <h3 className="font-bold text-text-primary text-lg">Get the Mobile App</h3>
-                <h3 className="font-bold text-text-primary text-2xl">The first version is coming live soon!</h3>
-                <p className="text-sm text-text-secondary mt-1">Free for now. No credit card required.</p>
+                <p className="text-xs font-bold uppercase tracking-wider text-primary mb-1">Now on the App Store</p>
+                <h3 className="font-bold text-text-primary text-lg">Download GoodHealthMate</h3>
+                <p className="text-sm text-text-secondary mt-1">Scan the QR code or tap the button below. Free to download.</p>
               </div>
             </div>
           </div>
@@ -927,9 +943,14 @@ function App() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button className="bg-white text-primary font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-gray-50 transition-colors">
+            <a
+              href="https://apps.apple.com/app/id6766896814"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-white text-primary font-bold px-8 py-4 rounded-lg shadow-lg hover:bg-gray-50 transition-colors"
+            >
               Download the App Now
-            </button>
+            </a>
             <a
               href="#features"
               className="text-white font-semibold underline-offset-4 hover:underline"
