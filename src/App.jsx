@@ -767,6 +767,7 @@ function App() {
               </div>
               <div>
                 <h3 className="font-bold text-text-primary text-lg">Get the Mobile App</h3>
+                <h3 className="font-bold text-text-primary text-2xl">The first version is coming live soon!</h3>
                 <p className="text-sm text-text-secondary mt-1">Free for now. No credit card required.</p>
               </div>
             </div>
