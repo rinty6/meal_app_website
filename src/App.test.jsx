@@ -57,12 +57,12 @@ describe('App Component', () => {
     expect(within(dialog).getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
     expect(window.location.pathname).toBe('/contact-us')
 
-    const emailLinks = within(dialog).getAllByRole('link', { name: 'duongphuthinh2001@gmail.com' })
-    expect(emailLinks[0]).toHaveAttribute('href', 'mailto:duongphuthinh2001@gmail.com')
+    const emailLinks = within(dialog).getAllByRole('link', { name: 'support@dreamingstudio.net' })
+    expect(emailLinks[0]).toHaveAttribute('href', 'mailto:support@dreamingstudio.net')
 
     const sendButton = within(dialog).getByRole('button', { name: /send feedback/i })
     const feedbackForm = sendButton.closest('form')
-    expect(feedbackForm).toHaveAttribute('action', 'https://formsubmit.co/duongphuthinh2001@gmail.com')
+    expect(feedbackForm).toHaveAttribute('action', 'https://formsubmit.co/support@dreamingstudio.net')
   })
 
   it('should open Contact modal from navbar and expose the support URL', async () => {

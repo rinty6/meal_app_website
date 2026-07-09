@@ -297,15 +297,15 @@ const ContactModalContent = () => (
   <div className="space-y-6">
     <p className="text-text-secondary text-lg">
       Need help or want to share ideas? Reach us directly at{' '}
-      <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-        duongphuthinh2001@gmail.com
+      <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
+        support@dreamingstudio.net
       </a>
       .
     </p>
     <p className="text-text-secondary">You can also send feedback below and attach screenshots or photos.</p>
 
     <form
-      action="https://formsubmit.co/duongphuthinh2001@gmail.com"
+      action="https://formsubmit.co/support@dreamingstudio.net"
       method="POST"
       encType="multipart/form-data"
       className="bg-white border border-border rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
@@ -384,24 +384,24 @@ const PrivacyModalContent = () => (
   <div className="space-y-8 text-text-secondary leading-relaxed">
     <div>
       <p className="text-text-secondary mb-1">
-        <span className="font-semibold text-text-primary">Operator:</span> Phu Thinh Duong
+        <span className="font-semibold text-text-primary">Operator:</span> GoodHealthMate
       </p>
       <p className="text-text-secondary mb-1">
         <span className="font-semibold text-text-primary">Last Updated:</span> May 13, 2026
       </p>
       <p className="text-text-secondary">
         <span className="font-semibold text-text-primary">Contact:</span>{' '}
-        <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-          duongphuthinh2001@gmail.com
+        <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
+          support@dreamingstudio.net
         </a>
       </p>
     </div>
 
     <div>
       <p>
-        This Privacy Policy explains how GoodHealthMate, operated by Phu Thinh Duong, collects, uses, stores, and
-        shares information when you use the GoodHealthMate mobile app and related meal-planning, recommendation,
-        notification, and food-recognition services.
+        This Privacy Policy explains how GoodHealthMate collects, uses, stores, and shares information when you use the
+        GoodHealthMate mobile app and related meal-planning, recommendation, notification, and food-recognition
+        services.
       </p>
     </div>
 
@@ -415,9 +415,9 @@ const PrivacyModalContent = () => (
     <div>
       <h3 className="text-2xl font-bold text-text-primary mb-3">1. Who This Policy Covers</h3>
       <p className="mb-3">
-        This Privacy Policy applies to the GoodHealthMate mobile application and related services operated by Phu Thinh
-        Duong, including connected meal-planning, recommendation, feedback, notification, and food-recognition features
-        that link to this policy.
+        This Privacy Policy applies to the GoodHealthMate mobile application and related services operated by
+        GoodHealthMate, including connected meal-planning, recommendation, feedback, notification, and food-recognition
+        features that link to this policy.
       </p>
       <p>
         If you use third-party sign-in, nutrition lookup, or notification providers through the app, those providers
@@ -577,8 +577,8 @@ const PrivacyModalContent = () => (
         <li>
           <span className="text-text-primary italic">
             &quot;You can request access, correction, export, or deletion by contacting us at{' '}
-            <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-              duongphuthinh2001@gmail.com
+            <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
+              support@dreamingstudio.net
             </a>
             .&quot;
           </span>
@@ -605,8 +605,8 @@ const PrivacyModalContent = () => (
         GoodHealthMate is not intended for children under the age of 16, or a higher minimum age where required by
         local law, unless a parent or guardian has authorized use where legally permitted. If you believe a child has
         provided personal information to us in violation of this section, contact us at{' '}
-        <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-          duongphuthinh2001@gmail.com
+        <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
+          support@dreamingstudio.net
         </a>
         .
       </p>
@@ -632,10 +632,10 @@ const PrivacyModalContent = () => (
     <div>
       <h3 className="text-2xl font-bold text-text-primary mb-3">12. Contact Us</h3>
       <p>
-        GoodHealthMate is operated by Phu Thinh Duong. If you have questions, support requests, or privacy requests,
+        GoodHealthMate is the operator of this app. If you have questions, support requests, or privacy requests,
         contact us at{' '}
-        <a href="mailto:duongphuthinh2001@gmail.com" className="text-primary font-semibold hover:underline">
-          duongphuthinh2001@gmail.com
+        <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
+          support@dreamingstudio.net
         </a>
         .
       </p>
