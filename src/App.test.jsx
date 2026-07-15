@@ -13,8 +13,8 @@ describe('App Component', () => {
     render(<App />)
 
     const nav = screen.getByRole('navigation')
-    expect(within(nav).getByText('GoodhealthMate')).toBeInTheDocument()
-    expect(within(nav).getByAltText(/goodhealthmate logo/i)).toBeInTheDocument()
+    expect(within(nav).getByText('GoodHealthMate')).toBeInTheDocument()
+    expect(within(nav).getByAltText(/goodhealthmate app icon/i)).toBeInTheDocument()
   })
 
   it('should render static navbar navigation items', () => {

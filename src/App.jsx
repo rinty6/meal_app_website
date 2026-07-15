@@ -14,16 +14,16 @@ import {
   Pause,
 } from 'lucide-react';
 
-import goodHealthMateLogo from './assets/GoodHealthMate_logo.png';
+import goodHealthMateAppIcon from './assets/GoodHealthMate_app_icon_rounded.png';
 import homeScreen from './assets/prototypes/home page.png';
 import calorieSummaryScreen from './assets/prototypes/calorie summary page.png';
-import calorieInsightScreen from './assets/prototypes/calorie insight page.png';
-import mealPlanningScreen from './assets/prototypes/meal planning page.png';
+import mealSummaryScreen from './assets/prototypes/meal summary page.png';
 import recipeScreen from './assets/prototypes/recipe page.png';
-import favoritesScreen from './assets/prototypes/favorites page.png';
+import recipeDetailScreen from './assets/prototypes/recipe detail page.png';
+import favoritesScreen from './assets/prototypes/my favorites page.png';
 import shoppingListScreen from './assets/prototypes/shopping list page.png';
-import addFoodScreen from './assets/prototypes/add food search results.png';
-import barcodeScreen from './assets/prototypes/barcode scan result.png';
+import foodSearchScreen from './assets/prototypes/food search page.png';
+import barcodeScreen from './assets/prototypes/barcode scan page.png';
 import profileScreen from './assets/prototypes/profile page.png';
 
 const SCREENS = [
@@ -40,16 +40,16 @@ const SCREENS = [
     img: calorieSummaryScreen,
   },
   {
-    id: 'calorie-insight',
-    name: 'Nutrition Insights',
-    desc: 'Trends and weekly breakdowns help you see where to lean in and where to ease up.',
-    img: calorieInsightScreen,
+    id: 'meal-summary',
+    name: 'Meal Summary',
+    desc: 'See your meals and daily nutrition in one clear view, so every choice stays connected to your goals.',
+    img: mealSummaryScreen,
   },
   {
-    id: 'add-food-search',
-    name: 'Add Food',
-    desc: 'Search a database tuned for the Australian shelf — log a meal in seconds.',
-    img: addFoodScreen,
+    id: 'food-search',
+    name: 'Food Search',
+    desc: 'Find the foods you need and log a meal in seconds.',
+    img: foodSearchScreen,
   },
   {
     id: 'barcode-scan',
@@ -58,16 +58,16 @@ const SCREENS = [
     img: barcodeScreen,
   },
   {
-    id: 'meal-planning',
-    name: 'Meal Planning',
-    desc: 'Lay out the week ahead. Drag meals across days and keep your goals in sight.',
-    img: mealPlanningScreen,
-  },
-  {
     id: 'recipe',
     name: 'Recipes',
-    desc: 'A library of healthy recipes with macros pre-calculated for your plan.',
+    desc: 'Browse healthy recipe ideas and make meal planning feel more achievable.',
     img: recipeScreen,
+  },
+  {
+    id: 'recipe-detail',
+    name: 'Recipe Detail',
+    desc: 'Check the ingredients, nutrition, and serving details before you log a meal.',
+    img: recipeDetailScreen,
   },
   {
     id: 'favorites',
@@ -271,7 +271,7 @@ const getRoutedSection = () => {
 const AboutModalContent = () => (
   <div className="space-y-8">
     <p className="text-lg text-text-secondary leading-relaxed">
-      GoodhealthMate is designed to help people build healthier eating habits without making life complicated. You can
+      GoodHealthMate is designed to help people build healthier eating habits without making life complicated. You can
       track meals, monitor calories and nutrition, plan ahead, and stay focused on realistic goals that actually fit
       your daily routine.
     </p>
@@ -310,7 +310,7 @@ const ContactModalContent = () => (
       encType="multipart/form-data"
       className="bg-white border border-border rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
     >
-      <input type="hidden" name="_subject" value="GoodhealthMate Website Feedback" />
+      <input type="hidden" name="_subject" value="GoodHealthMate Website Feedback" />
       <input type="hidden" name="_captcha" value="false" />
       <input type="hidden" name="_template" value="table" />
 
@@ -686,7 +686,7 @@ function App() {
 
   const modalContent = {
     about: {
-      title: 'About GoodhealthMate',
+      title: 'About GoodHealthMate',
       subtitle: 'Learn what the app does and why it helps your daily nutrition goals.',
       body: <AboutModalContent />,
     },
@@ -710,8 +710,8 @@ function App() {
       <nav className="flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           {/* Logo */}
-          <img src={goodHealthMateLogo} alt="GoodhealthMate logo" className="h-10 w-auto object-contain" />
-          <span className="text-xl font-bold text-primary tracking-tight">GoodhealthMate</span>
+          <img src={goodHealthMateAppIcon} alt="GoodHealthMate app icon" className="h-10 w-10 rounded-lg object-contain" />
+          <span className="text-xl font-bold text-primary tracking-tight">GoodHealthMate</span>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-text-secondary">
@@ -757,7 +757,7 @@ function App() {
           <div className="md:w-1/2 flex flex-col items-start text-left">
             <h1 className="text-5xl md:text-6xl font-bold text-text-primary leading-[1.1] mb-6">
               Reach Your Goals with <br className="hidden md:block" />
-              <span className="gradient-text">GoodhealthMate</span>
+              <span className="gradient-text">GoodHealthMate</span>
             </h1>
             <p className="text-lg text-text-secondary mb-8 max-w-lg leading-relaxed">
               Track your daily meals, monitor your nutrition, and achieve lasting results. Join thousands who have
@@ -918,7 +918,7 @@ function App() {
             <h2 className="text-4xl md:text-5xl font-bold mb-4">Get started at the foodprint</h2>
             <p className="text-blue-100 text-lg max-w-2xl mx-auto mb-10">
               Take the first step toward a smaller, smarter foodprint. Set your goal, scan your first meal, and let
-              GoodhealthMate map the path one day at a time.
+              GoodHealthMate map the path one day at a time.
             </p>
           </div>
 
@@ -966,8 +966,8 @@ function App() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-12 border-b border-gray-800 pb-12">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <img src={goodHealthMateLogo} alt="GoodhealthMate logo" className="h-8 w-auto object-contain" />
-              <span className="text-lg font-bold text-white tracking-tight">GoodhealthMate</span>
+              <img src={goodHealthMateAppIcon} alt="GoodHealthMate app icon" className="h-8 w-8 rounded-md object-contain" />
+              <span className="text-lg font-bold text-white tracking-tight">GoodHealthMate</span>
             </div>
             <p className="text-sm text-gray-400">The fitness and nutrition tracker for reaching your goals.</p>
           </div>
@@ -1020,7 +1020,7 @@ function App() {
           </div>
         </div>
 
-        <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">© 2026 GoodhealthMate. All rights reserved.</div>
+        <div className="max-w-7xl mx-auto text-center text-sm text-gray-500">© 2026 GoodHealthMate. All rights reserved.</div>
       </footer>
 
       {/* 7. MODAL */}
