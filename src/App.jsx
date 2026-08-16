@@ -1007,14 +1007,9 @@ function App() {
                 </a>
               </li>
               <li>
-                <button
-                  type="button"
-                  onClick={() => handleSectionToggle('privacy')}
-                  aria-expanded={activeSection === 'privacy'}
-                  className="hover:text-white transition-colors bg-transparent border-0 p-0 cursor-pointer"
-                >
+                <a href="/privacy/" className="hover:text-white transition-colors">
                   Privacy Policy
-                </button>
+                </a>
               </li>
             </ul>
           </div>
