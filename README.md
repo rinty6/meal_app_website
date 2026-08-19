@@ -29,3 +29,16 @@ GoodHealthMate helps users manage their nutrition goals by providing intelligent
 
 ---
 *Developed by Leo*
+
+## Secure contact form deployment
+
+The contact form uses a Vercel Function at `/api/contact`. Add these **Production** environment variables in Vercel before deploying it:
+
+```text
+TURNSTILE_SECRET_KEY=<secret from the Cloudflare Turnstile widget>
+RESEND_API_KEY=<Resend API key>
+CONTACT_FROM_EMAIL=GoodHealthMate <contact@goodhealthmate.com>
+CONTACT_TO_EMAIL=support@dreamingstudio.net
+```
+
+`CONTACT_TO_EMAIL` is the inbox that receives website feedback. Keep it as `support@dreamingstudio.net` unless you have configured a working inbox for `contact@goodhealthmate.com`. The Turnstile site key is public and is already embedded in the forms; do not add the Turnstile secret or the Resend API key to source code.

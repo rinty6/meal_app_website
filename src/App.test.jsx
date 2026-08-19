@@ -62,7 +62,8 @@ describe('App Component', () => {
 
     const sendButton = within(dialog).getByRole('button', { name: /send feedback/i })
     const feedbackForm = sendButton.closest('form')
-    expect(feedbackForm).toHaveAttribute('action', 'https://formsubmit.co/support@dreamingstudio.net')
+    expect(feedbackForm).not.toHaveAttribute('action')
+    expect(feedbackForm.querySelector('[data-turnstile-sitekey]')).toHaveAttribute('data-turnstile-sitekey', '0x4AAAAAAEVBQDxSpGVb84GL')
   })
 
   it('should open Contact modal from navbar and expose the support URL', async () => {
@@ -83,17 +84,11 @@ describe('App Component', () => {
     expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
   })
 
-  it('should open Privacy Policy modal from footer', async () => {
-    const user = userEvent.setup()
+  it('should link to the standalone Privacy Policy page from the footer', () => {
     render(<App />)
 
     const footer = screen.getByText(/all rights reserved/i).closest('footer')
-    await user.click(within(footer).getByRole('button', { name: /^privacy policy$/i }))
-
-    const dialog = screen.getByRole('dialog')
-    expect(within(dialog).getByRole('heading', { name: /privacy policy: goodhealthmate/i })).toBeInTheDocument()
-    expect(within(dialog).getByText(/last updated:/i)).toBeInTheDocument()
-    expect(within(dialog).getAllByText(/may 13, 2026/i).length).toBeGreaterThan(0)
+    expect(within(footer).getByRole('link', { name: /^privacy policy$/i })).toHaveAttribute('href', '/privacy/')
   })
 
   it('should close modal when close button is clicked', async () => {
@@ -108,7 +103,7 @@ describe('App Component', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('should show one modal content at a time', async () => {
+  it('should keep the contact modal open after using the footer contact link', async () => {
     const user = userEvent.setup()
     render(<App />)
 
@@ -116,9 +111,7 @@ describe('App Component', () => {
     await user.click(within(footer).getByRole('link', { name: /^contact us$/i }))
     expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
 
-    await user.click(within(footer).getByRole('button', { name: /^privacy policy$/i }))
-    expect(screen.getByRole('heading', { name: /privacy policy: goodhealthmate/i })).toBeInTheDocument()
-    expect(screen.queryByRole('heading', { name: /^contact us$/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
   })
 
   it('should render hero and feature content', () => {

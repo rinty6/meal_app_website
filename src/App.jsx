@@ -293,92 +293,166 @@ const AboutModalContent = () => (
   </div>
 );
 
-const ContactModalContent = () => (
-  <div className="space-y-6">
-    <p className="text-text-secondary text-lg">
-      Need help or want to share ideas? Reach us directly at{' '}
-      <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
-        support@dreamingstudio.net
-      </a>
-      .
-    </p>
-    <p className="text-text-secondary">You can also send feedback below and attach screenshots or photos.</p>
+const TURNSTILE_SITE_KEY = '0x4AAAAAAEVBQDxSpGVb84GL';
+const MAX_ATTACHMENTS = 2;
+const MAX_ATTACHMENT_BYTES = 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
-    <form
-      action="https://formsubmit.co/support@dreamingstudio.net"
-      method="POST"
-      encType="multipart/form-data"
-      className="bg-white border border-border rounded-2xl p-6 md:p-8 shadow-sm space-y-5"
-    >
-      <input type="hidden" name="_subject" value="GoodHealthMate Website Feedback" />
-      <input type="hidden" name="_captcha" value="false" />
-      <input type="hidden" name="_template" value="table" />
+function TurnstileWidget({ onToken, onLoadError }) {
+  const containerRef = useRef(null);
+  const widgetIdRef = useRef(null);
 
-      <div>
-        <label htmlFor="name" className="block text-sm font-semibold text-text-primary mb-2">
-          Name
-        </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          placeholder="Your name"
-          className="w-full rounded-lg border border-border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30"
-        />
-      </div>
+  useEffect(() => {
+    const renderWidget = () => {
+      if (!containerRef.current || !window.turnstile || widgetIdRef.current !== null) return;
+      widgetIdRef.current = window.turnstile.render(containerRef.current, {
+        sitekey: TURNSTILE_SITE_KEY,
+        action: 'contact_form',
+        callback: onToken,
+        'expired-callback': () => onToken(''),
+        'error-callback': onLoadError,
+      });
+    };
 
-      <div>
-        <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-2">
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          placeholder="you@example.com"
-          className="w-full rounded-lg border border-border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30"
-        />
-      </div>
+    const existingScript = document.querySelector('script[data-goodhealthmate-turnstile]');
+    const script = existingScript || document.createElement('script');
+    const handleError = () => onLoadError('The security check could not load. Please refresh and try again.');
+    if (!existingScript) {
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.dataset.goodhealthmateTurnstile = 'true';
+      document.head.append(script);
+    }
 
-      <div>
-        <label htmlFor="message" className="block text-sm font-semibold text-text-primary mb-2">
-          Feedback
-        </label>
-        <textarea
-          id="message"
-          name="feedback_message"
-          required
-          rows="5"
-          placeholder="Share your feedback..."
-          className="w-full rounded-lg border border-border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30"
-        />
-      </div>
+    if (window.turnstile) renderWidget();
+    else script.addEventListener('load', renderWidget, { once: true });
+    script.addEventListener('error', handleError, { once: true });
 
-      <div>
-        <label htmlFor="images" className="block text-sm font-semibold text-text-primary mb-2">
-          Attach Images (optional)
-        </label>
-        <input
-          id="images"
-          name="attachment"
-          type="file"
-          accept="image/*"
-          multiple
-          className="w-full rounded-lg border border-border px-3 py-2 file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-white hover:file:bg-blue-600"
-        />
-      </div>
+    return () => {
+      script.removeEventListener('load', renderWidget);
+      script.removeEventListener('error', handleError);
+      if (widgetIdRef.current !== null && window.turnstile?.remove) window.turnstile.remove(widgetIdRef.current);
+    };
+  }, [onLoadError, onToken]);
 
-      <button
-        type="submit"
-        className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors"
-      >
-        Send Feedback
-      </button>
-    </form>
-  </div>
-);
+  return <div ref={containerRef} aria-label="Security verification" data-turnstile-sitekey={TURNSTILE_SITE_KEY} />;
+}
+
+function readFileAsBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result).split(',')[1]);
+    reader.onerror = () => reject(new Error('The attachment could not be read.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function ContactModalContent() {
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [status, setStatus] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleTurnstileError = useCallback((message = 'The security check failed. Please refresh and try again.') => {
+    setTurnstileToken('');
+    setStatus(message);
+  }, []);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const attachments = Array.from(formData.getAll('attachments')).filter((file) => file instanceof File && file.size > 0);
+
+    if (!turnstileToken) {
+      setStatus('Please complete the security check.');
+      return;
+    }
+    if (attachments.length > MAX_ATTACHMENTS) {
+      setStatus(`Please attach no more than ${MAX_ATTACHMENTS} images.`);
+      return;
+    }
+    if (attachments.some((file) => !ALLOWED_IMAGE_TYPES.has(file.type) || file.size > MAX_ATTACHMENT_BYTES)) {
+      setStatus('Attachments must be JPEG, PNG, or WebP images up to 1 MB each.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus('');
+    try {
+      const encodedAttachments = await Promise.all(attachments.map(async (file) => ({
+        type: file.type,
+        content: await readFileAsBase64(file),
+      })));
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: formData.get('name'),
+          email: formData.get('email'),
+          message: formData.get('message'),
+          website: formData.get('website'),
+          turnstileToken,
+          attachments: encodedAttachments,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'We could not send your message. Please try again later.');
+      form.reset();
+      setTurnstileToken('');
+      window.turnstile?.reset();
+      setStatus('Thanks — your message has been sent.');
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : 'We could not send your message. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <p className="text-text-secondary text-lg">
+        Need help or want to share ideas? Reach us directly at{' '}
+        <a href="mailto:support@dreamingstudio.net" className="text-primary font-semibold hover:underline">
+          support@dreamingstudio.net
+        </a>
+        .
+      </p>
+      <p className="text-text-secondary">You can also send feedback below and attach up to two images.</p>
+
+      <form onSubmit={handleSubmit} className="bg-white border border-border rounded-2xl p-6 md:p-8 shadow-sm space-y-5">
+        <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-text-primary mb-2">Name</label>
+          <input id="name" name="name" type="text" required maxLength="120" placeholder="Your name" className="w-full rounded-lg border border-border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-semibold text-text-primary mb-2">Email</label>
+          <input id="email" name="email" type="email" required maxLength="254" placeholder="you@example.com" className="w-full rounded-lg border border-border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+
+        <div>
+          <label htmlFor="message" className="block text-sm font-semibold text-text-primary mb-2">Feedback</label>
+          <textarea id="message" name="message" required rows="5" maxLength="4000" placeholder="Share your feedback..." className="w-full rounded-lg border border-border px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        </div>
+
+        <div>
+          <label htmlFor="attachments" className="block text-sm font-semibold text-text-primary mb-2">Attach images (optional)</label>
+          <input id="attachments" name="attachments" type="file" accept="image/jpeg,image/png,image/webp" multiple className="w-full rounded-lg border border-border px-3 py-2 file:mr-4 file:rounded-md file:border-0 file:bg-primary file:px-4 file:py-2 file:text-white hover:file:bg-blue-600" />
+          <p className="mt-2 text-sm text-text-secondary">JPEG, PNG, or WebP only; up to 2 images and 1 MB each.</p>
+        </div>
+
+        <input name="website" type="text" tabIndex="-1" autoComplete="off" aria-hidden="true" className="absolute -left-[9999px]" />
+        <TurnstileWidget onToken={setTurnstileToken} onLoadError={handleTurnstileError} />
+        <p role="status" aria-live="polite" className={status.startsWith('Thanks') ? 'text-green-700 font-medium' : 'text-red-700 font-medium'}>{status}</p>
+
+        <button type="submit" disabled={isSubmitting} className="bg-primary text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-600 transition-colors disabled:cursor-not-allowed disabled:opacity-60">
+          {isSubmitting ? 'Sending…' : 'Send Feedback'}
+        </button>
+      </form>
+    </div>
+  );
+}
 
 const PrivacyModalContent = () => (
   <div className="space-y-8 text-text-secondary leading-relaxed">

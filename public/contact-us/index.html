@@ -124,6 +124,21 @@
         font-weight: 800;
         padding: 13px 20px;
       }
+
+      .status {
+        min-height: 24px;
+        margin: 0;
+        font-size: 15px;
+        font-weight: 650;
+      }
+
+      .status.error { color: #b42318; }
+      .status.success { color: #067647; }
+
+      .honeypot {
+        position: absolute;
+        left: -9999px;
+      }
     </style>
   </head>
   <body>
@@ -139,37 +154,105 @@
           Need help or want to share ideas? Reach us directly at
           <a href="mailto:support@dreamingstudio.net">support@dreamingstudio.net</a>.
         </p>
-        <p>You can also send feedback below and attach screenshots or photos.</p>
+        <p>You can also send feedback below and attach up to two images.</p>
         <p><a href="/privacy/">Read our Privacy Policy</a></p>
 
-        <form action="https://formsubmit.co/support@dreamingstudio.net" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="_subject" value="GoodhealthMate Website Feedback" />
-          <input type="hidden" name="_captcha" value="false" />
-          <input type="hidden" name="_template" value="table" />
+        <form id="contactForm">
 
           <label>
             Name
-            <input name="name" type="text" required placeholder="Your name" />
+            <input name="name" type="text" required maxlength="120" placeholder="Your name" />
           </label>
 
           <label>
             Email
-            <input name="email" type="email" required placeholder="you@example.com" />
+            <input name="email" type="email" required maxlength="254" placeholder="you@example.com" />
           </label>
 
           <label>
             Feedback
-            <textarea name="feedback_message" required placeholder="Share your feedback..."></textarea>
+            <textarea name="message" required maxlength="4000" placeholder="Share your feedback..."></textarea>
           </label>
 
           <label>
-            Attach Images (optional)
-            <input name="attachment" type="file" accept="image/*" multiple />
+            Attach images (optional)
+            <input name="attachments" type="file" accept="image/jpeg,image/png,image/webp" multiple />
           </label>
 
+          <input class="honeypot" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+          <div class="cf-turnstile" data-sitekey="0x4AAAAAAEVBQDxSpGVb84GL" data-action="contact_form"></div>
+          <p class="status" id="formStatus" role="status" aria-live="polite"></p>
           <button type="submit">Send Feedback</button>
         </form>
       </section>
     </main>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    <script>
+      (() => {
+        const maxAttachments = 2;
+        const maxAttachmentBytes = 1024 * 1024;
+        const allowedImageTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+        const form = document.querySelector('#contactForm');
+        const status = document.querySelector('#formStatus');
+        const submitButton = form.querySelector('button[type="submit"]');
+
+        const setStatus = (message, type) => {
+          status.textContent = message;
+          status.className = `status ${type || ''}`;
+        };
+
+        const readFileAsBase64 = (file) => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result).split(',')[1]);
+          reader.onerror = () => reject(new Error('The attachment could not be read.'));
+          reader.readAsDataURL(file);
+        });
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          const formData = new FormData(form);
+          const token = formData.get('cf-turnstile-response');
+          const attachments = formData.getAll('attachments').filter((file) => file instanceof File && file.size > 0);
+
+          if (!token) return setStatus('Please complete the security check.', 'error');
+          if (attachments.length > maxAttachments) return setStatus(`Please attach no more than ${maxAttachments} images.`, 'error');
+          if (attachments.some((file) => !allowedImageTypes.has(file.type) || file.size > maxAttachmentBytes)) {
+            return setStatus('Attachments must be JPEG, PNG, or WebP images up to 1 MB each.', 'error');
+          }
+
+          submitButton.disabled = true;
+          submitButton.textContent = 'Sending…';
+          setStatus('', '');
+          try {
+            const encodedAttachments = await Promise.all(attachments.map(async (file) => ({
+              type: file.type,
+              content: await readFileAsBase64(file),
+            })));
+            const response = await fetch('/api/contact', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                name: formData.get('name'),
+                email: formData.get('email'),
+                message: formData.get('message'),
+                website: formData.get('website'),
+                turnstileToken: token,
+                attachments: encodedAttachments,
+              }),
+            });
+            const result = await response.json();
+            if (!response.ok) throw new Error(result.error || 'We could not send your message. Please try again later.');
+            form.reset();
+            window.turnstile?.reset();
+            setStatus('Thanks — your message has been sent.', 'success');
+          } catch (error) {
+            setStatus(error instanceof Error ? error.message : 'We could not send your message. Please try again later.', 'error');
+          } finally {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Send Feedback';
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
