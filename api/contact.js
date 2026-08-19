@@ -117,8 +117,14 @@ async function verifyTurnstile(token, request) {
     body: JSON.stringify({ secret, response: token, remoteip: getClientIp(request) }),
   });
   const result = await response.json();
+  const valid = response.ok && result.success === true && result.action === TURNSTILE_ACTION && ALLOWED_HOSTNAMES.has(result.hostname);
   return {
-    valid: response.ok && result.success === true && result.action === TURNSTILE_ACTION && ALLOWED_HOSTNAMES.has(result.hostname),
+    valid,
+    status: response.status,
+    success: result.success === true,
+    hostname: typeof result.hostname === 'string' ? result.hostname : undefined,
+    action: typeof result.action === 'string' ? result.action : undefined,
+    errorCodes: Array.isArray(result['error-codes']) ? result['error-codes'] : [],
   };
 }
 
@@ -147,7 +153,18 @@ async function sendContactEmail(contact) {
     }),
   });
 
-  return { sent: response.ok };
+  let result;
+  try {
+    result = await response.json();
+  } catch {
+    result = undefined;
+  }
+
+  return {
+    sent: response.ok,
+    status: response.status,
+    error: typeof result?.message === 'string' ? result.message : undefined,
+  };
 }
 
 export default async function handler(request, response) {
@@ -173,11 +190,23 @@ export default async function handler(request, response) {
   try {
     const turnstile = await verifyTurnstile(parsed.value.turnstileToken, request);
     if (turnstile.configurationError) return sendJson(response, 503, { error: 'Contact form is temporarily unavailable.' });
-    if (!turnstile.valid) return sendJson(response, 400, { error: 'Security verification failed. Please try again.' });
+    if (!turnstile.valid) {
+      console.warn('Contact form Turnstile verification rejected', {
+        status: turnstile.status,
+        success: turnstile.success,
+        hostname: turnstile.hostname,
+        action: turnstile.action,
+        errorCodes: turnstile.errorCodes,
+      });
+      return sendJson(response, 400, { error: 'Security verification failed. Please try again.' });
+    }
 
     const delivery = await sendContactEmail(parsed.value);
     if (delivery.configurationError) return sendJson(response, 503, { error: 'Contact form is temporarily unavailable.' });
-    if (!delivery.sent) return sendJson(response, 502, { error: 'We could not send your message. Please try again later.' });
+    if (!delivery.sent) {
+      console.error('Contact form Resend delivery rejected', { status: delivery.status, error: delivery.error });
+      return sendJson(response, 502, { error: 'We could not send your message. Please try again later.' });
+    }
   } catch {
     return sendJson(response, 502, { error: 'We could not send your message. Please try again later.' });
   }

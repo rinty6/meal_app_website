@@ -60,6 +60,7 @@ describe('contact API', () => {
   it('rejects a forged Turnstile token without sending email', async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ success: false }) });
     vi.stubGlobal('fetch', fetchMock);
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const response = createResponse();
 
     await handler(createRequest(validMessage), response);
@@ -68,6 +69,10 @@ describe('contact API', () => {
     expect(response.body.error).toMatch(/security verification failed/i);
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(fetchMock.mock.calls[0][0]).toContain('turnstile');
+    expect(warning).toHaveBeenCalledWith('Contact form Turnstile verification rejected', expect.objectContaining({
+      success: false,
+      errorCodes: [],
+    }));
   });
 
   it('accepts a verified, valid message and sends it through Resend', async () => {
