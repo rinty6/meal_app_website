@@ -73,7 +73,7 @@ p { margin: 0; }
 
 .section-heading { display: flex; flex-direction: column; align-items: center; gap: 16px; text-align: center; }
 .section-heading h2 { font-size: clamp(36px, 3.2vw, 46px); line-height: 1.1; font-weight: 800; text-wrap: balance; }
-.section-heading p { max-width: 600px; color: var(--muted); font-size: 18px; line-height: 1.6; }
+.section-heading p { max-width: 600px; margin-inline: auto; color: var(--muted); font-size: 18px; line-height: 1.6; text-wrap: balance; }
 .screens-band { padding: 86px 0 96px; background: linear-gradient(180deg, var(--sky) 0%, #f7faff 62%, #fff 100%); }
 .screens-stack { height: 650px; margin-top: 54px; display: flex; align-items: flex-start; justify-content: center; gap: 34px; }
 .phone-frame { width: 258px; padding: 9px; border-radius: 44px; background: #0b1220; box-shadow: 0 34px 64px -22px rgba(11,33,73,.38), 0 10px 22px -8px rgba(11,33,73,.16); }
