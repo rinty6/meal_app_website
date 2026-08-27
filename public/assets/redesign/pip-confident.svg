@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-12 -16 224 224" style="width: 150px; height: 150px; display: block; animation: pipFloat calc(3.2s * var(--sp)) ease-in-out infinite" aria-label="Pip, confident"><style>svg{--sp:1;--pip-body:#2B7BE0;--pip-body2:#1B5CB4;--pip-belly:#FFF4E4;--pip-accent:#FF9500;--pip-accent2:#DD7B00;--pip-eye:#0B2149}@keyframes pipBreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.035,.965)}}@keyframes pipBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}@keyframes pipBlink{0%,90%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}@keyframes pipShadowSoft{0%,100%{transform:scaleX(1);opacity:.11}50%{transform:scaleX(.95);opacity:.09}}@keyframes pipCrest{0%{transform:rotate(58deg)}100%{transform:rotate(65deg)}}@keyframes pipFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@media(prefers-reduced-motion:reduce){*{animation-play-state:paused!important;animation-delay:0s!important}}</style>
+          <ellipse cx="100" cy="184" rx="44" ry="7" fill="#0b2149" opacity="0.091" transform="translate(100.00 184.00) matrix(0.95329 0 0 1 0 0) translate(-100.00 -184.00)"/>
+          <g transform="translate(0.00 0.00) matrix(1 0 0 1 0 -4.67124) translate(0.00 0.00)">
+            <g>
+              <path d="M84,156 V170" fill="none" stroke="#ff9500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M116,156 V170" fill="none" stroke="#ff9500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M74,177 L84,170 L94,177" fill="none" stroke="#ff9500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M84,170 V179" fill="none" stroke="#ff9500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M106,177 L116,170 L126,177" fill="none" stroke="#ff9500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M116,170 V179" fill="none" stroke="#ff9500" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g transform="translate(121.57 168.00) matrix(1.06992 0 0 1.04995 0 0) translate(-121.57 -168.00)">
+              <g transform="translate(103.00 58.00) matrix(0.99452 -0.10453 0.10453 0.99452 0 0) translate(-103.00 -58.00)">
+                <path d="M99,58 C95,42 91,34 88,25 C97,31 102,41 104,54 Z" fill="#2b7be0"/>
+                <path d="M104,56 C107,41 111,33 118,26 C118,37 113,48 109,58 Z" fill="#2b7be0"/>
+              </g>
+              <ellipse cx="100" cy="112" rx="58" ry="56" fill="#2b7be0"/>
+              <ellipse cx="44" cy="120" rx="15" ry="28" fill="#1b5cb4" transform="translate(44.00 96.48) matrix(0.86945 -0.49402 0.49402 0.86945 6.02897 -3.42569) translate(-44.00 -96.48)"/>
+              <ellipse cx="156" cy="120" rx="15" ry="28" fill="#1b5cb4" transform="translate(156.00 96.48) matrix(0.48251 -0.87589 0.87589 0.48251 0 0) translate(-156.00 -96.48)"/>
+              <ellipse cx="100" cy="132" rx="36" ry="32" fill="#fff4e4"/>
+              <ellipse cx="60" cy="128" rx="10" ry="6.5" fill="#ff7a6b" opacity="0.4"/>
+              <ellipse cx="140" cy="128" rx="10" ry="6.5" fill="#ff7a6b" opacity="0.4"/>
+              <path d="M64,86 Q79,80 94,86" fill="none" stroke-width="5" stroke-linecap="round" opacity="0.85" stroke="#0b2149"/>
+              <path d="M108,80 Q122,72 136,82" fill="none" stroke-width="5" stroke-linecap="round" opacity="0.85" stroke="#0b2149"/>
+              <g transform="translate(100.00 103.00) matrix(1 0 0 1 0 0) translate(-100.00 -103.00)">
+                <circle cx="80" cy="106" r="15" fill="#ffffff"/><circle cx="120" cy="106" r="15" fill="#ffffff"/>
+                <circle cx="83" cy="108" r="8" fill="#0b2149"/><circle cx="123" cy="108" r="8" fill="#0b2149"/>
+                <circle cx="80" cy="105" r="3.2" fill="#ffffff"/><circle cx="120" cy="105" r="3.2" fill="#ffffff"/>
+                <path d="M65,100 A15,15 0 0,1 95,100 Z" opacity="0.9" fill="#1b5cb4"/>
+                <path d="M105,100 A15,15 0 0,1 135,100 Z" opacity="0.9" fill="#1b5cb4"/>
+              </g>
+              <path d="M100,120 L88,129 L112,129 Z" fill="#ff9500"/>
+              <path d="M88,129 Q104,142 112,129 Z" fill="#dd7b00"/>
+            </g>
+          </g>
+          <g opacity="0.934" transform="translate(176.00 85.00) matrix(0.64959 0.68963 -0.68963 0.64959 0 0) translate(-176.00 -85.00)">
+            <path d="M176,60 l3.5,9 l9,3.5 l-9,3.5 l-3.5,9 l-3.5,-9 l-9,-3.5 l9,-3.5 Z" fill="#ff9500"/>
+          </g>
+        </svg>
+

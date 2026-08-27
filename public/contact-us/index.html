@@ -9,150 +9,21 @@
     <meta property="og:title" content="Contact GoodHealthMate" />
     <meta property="og:description" content="Contact GoodHealthMate for support, feedback, or privacy requests." />
     <title>Contact Us | GoodHealthMate</title>
-    <style>
-      :root {
-        color-scheme: light;
-        --primary: #007bff;
-        --text: #0b1120;
-        --muted: #667085;
-        --border: #d1d5db;
-        --surface: #ffffff;
-        --page: #f6f9fc;
-      }
-
-      * {
-        box-sizing: border-box;
-      }
-
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: var(--page);
-        color: var(--text);
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        line-height: 1.5;
-      }
-
-      main {
-        width: min(100%, 760px);
-        margin: 0 auto;
-        padding: 48px 20px;
-      }
-
-      .brand {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 32px;
-        color: var(--primary);
-        font-size: 20px;
-        font-weight: 800;
-        text-decoration: none;
-      }
-
-      .mark {
-        display: inline-grid;
-        width: 40px;
-        height: 40px;
-        place-items: center;
-        border-radius: 10px;
-        background: var(--primary);
-        color: #ffffff;
-      }
-
-      .panel {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 32px;
-        box-shadow: 0 18px 50px rgb(15 23 42 / 0.08);
-      }
-
-      h1 {
-        margin: 0 0 12px;
-        font-size: clamp(32px, 7vw, 48px);
-        line-height: 1.1;
-      }
-
-      p {
-        margin: 0 0 18px;
-        color: var(--muted);
-        font-size: 18px;
-      }
-
-      a {
-        color: var(--primary);
-        font-weight: 700;
-      }
-
-      form {
-        display: grid;
-        gap: 18px;
-        margin-top: 28px;
-      }
-
-      label {
-        display: grid;
-        gap: 8px;
-        color: var(--text);
-        font-size: 14px;
-        font-weight: 700;
-      }
-
-      input,
-      textarea {
-        width: 100%;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 12px 14px;
-        font: inherit;
-      }
-
-      textarea {
-        min-height: 140px;
-        resize: vertical;
-      }
-
-      button {
-        justify-self: start;
-        border: 0;
-        border-radius: 8px;
-        background: var(--primary);
-        color: #ffffff;
-        cursor: pointer;
-        font: inherit;
-        font-weight: 800;
-        padding: 13px 20px;
-      }
-
-      .status {
-        min-height: 24px;
-        margin: 0;
-        font-size: 15px;
-        font-weight: 650;
-      }
-
-      .status.error { color: #b42318; }
-      .status.success { color: #067647; }
-
-      .honeypot {
-        position: absolute;
-        left: -9999px;
-      }
-    </style>
+    <link rel="stylesheet" href="/site-pages.css" />
   </head>
   <body>
+    <header class="page-header">
+      <div class="page-header-inner">
+        <a class="brand" href="/"><img src="/assets/redesign/ghm-icon.png" alt="" /><span>GoodHealthMate</span></a>
+        <a class="back-link" href="/">Back to home</a>
+      </div>
+    </header>
     <main>
-      <a class="brand" href="/">
-        <span class="mark">G</span>
-        <span>GoodHealthMate</span>
-      </a>
-
       <section class="panel" aria-labelledby="contact-title">
         <h1 id="contact-title">Contact Us</h1>
-        <p>
+        <p class="intro">
           Need help or want to share ideas? Reach us directly at
-          <a href="mailto:support@dreamingstudio.net">support@dreamingstudio.net</a>.
+          <a href="mailto:support@goodhealthmate.com">support@goodhealthmate.com</a>.
         </p>
         <p>You can also send feedback below and attach up to two images.</p>
         <p><a href="/privacy/">Read our Privacy Policy</a></p>
@@ -186,6 +57,7 @@
         </form>
       </section>
     </main>
+    <footer class="page-footer">© 2026 GoodHealthMate · ABN 29 677 871 686 · Made in Adelaide</footer>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <script>
       (() => {

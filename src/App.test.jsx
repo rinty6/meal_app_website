@@ -1,132 +1,44 @@
-﻿import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
-import { beforeEach } from 'vitest'
-import userEvent from '@testing-library/user-event'
 import App from './App'
 
-beforeEach(() => {
-  window.history.replaceState({}, '', '/')
-})
+const APP_STORE_URL = 'https://apps.apple.com/app/id6766896814'
 
-describe('App Component', () => {
-  it('should render the navbar with logo and brand name', () => {
+describe('GoodHealthMate landing page', () => {
+  it('renders the simplified header without the removed navigation menu', () => {
     render(<App />)
-
-    const nav = screen.getByRole('navigation')
-    expect(within(nav).getByText('GoodHealthMate')).toBeInTheDocument()
-    expect(within(nav).getByAltText(/goodhealthmate app icon/i)).toBeInTheDocument()
+    const header = screen.getByRole('banner')
+    expect(within(header).getByText('GoodHealthMate')).toBeInTheDocument()
+    const downloadLink = within(header).getByRole('link', { name: /download goodhealthmate/i })
+    expect(downloadLink).toHaveAttribute('href', APP_STORE_URL)
+    expect(downloadLink.querySelector('.apple-logo')).toHaveAttribute('src', '/assets/redesign/apple-logo-light.svg')
+    expect(screen.queryByRole('navigation')).not.toBeInTheDocument()
   })
 
-  it('should render static navbar navigation items', () => {
+  it('renders the approved MVP sections and real app screenshots', () => {
     render(<App />)
-
-    const nav = screen.getByRole('navigation')
-    expect(within(nav).getByRole('link', { name: /^features$/i })).toHaveAttribute('href', '#features')
-    expect(within(nav).getByRole('link', { name: /how it works/i })).toHaveAttribute('href', '#how-it-works')
-    expect(within(nav).getByRole('button', { name: /^about$/i })).toBeInTheDocument()
-    expect(within(nav).getByRole('link', { name: /^contact$/i })).toHaveAttribute('href', '/contact-us')
-  })
-
-  it('should keep modal hidden by default', () => {
-    render(<App />)
-
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
-
-  it('should open About modal when About is clicked', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    const nav = screen.getByRole('navigation')
-    await user.click(within(nav).getByRole('button', { name: /^about$/i }))
-
-    const dialog = screen.getByRole('dialog')
-    expect(within(dialog).getByRole('heading', { name: /about goodhealthmate/i })).toBeInTheDocument()
-    expect(within(dialog).getByText(/goodhealthmate is designed to help people build healthier eating habits/i)).toBeInTheDocument()
-    expect(within(dialog).getByRole('button', { name: /close dialog/i })).toBeInTheDocument()
-  })
-
-  it('should open Contact modal from footer and keep form available', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    const footer = screen.getByText(/all rights reserved/i).closest('footer')
-    await user.click(within(footer).getByRole('link', { name: /^contact us$/i }))
-
-    const dialog = screen.getByRole('dialog')
-    expect(within(dialog).getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
-    expect(window.location.pathname).toBe('/contact-us')
-
-    const emailLinks = within(dialog).getAllByRole('link', { name: 'support@dreamingstudio.net' })
-    expect(emailLinks[0]).toHaveAttribute('href', 'mailto:support@dreamingstudio.net')
-
-    const sendButton = within(dialog).getByRole('button', { name: /send feedback/i })
-    const feedbackForm = sendButton.closest('form')
-    expect(feedbackForm).not.toHaveAttribute('action')
-    expect(feedbackForm.querySelector('[data-turnstile-sitekey]')).toHaveAttribute('data-turnstile-sitekey', '0x4AAAAAAEVBQDxSpGVb84GL')
-  })
-
-  it('should open Contact modal from navbar and expose the support URL', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    const nav = screen.getByRole('navigation')
-    await user.click(within(nav).getByRole('link', { name: /^contact$/i }))
-
-    expect(window.location.pathname).toBe('/contact-us')
-    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
-  })
-
-  it('should open Contact modal when visiting the support URL directly', () => {
-    window.history.replaceState({}, '', '/contact-us')
-    render(<App />)
-
-    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
-  })
-
-  it('should link to the standalone Privacy Policy page from the footer', () => {
-    render(<App />)
-
-    const footer = screen.getByText(/all rights reserved/i).closest('footer')
-    expect(within(footer).getByRole('link', { name: /^privacy policy$/i })).toHaveAttribute('href', '/privacy/')
-  })
-
-  it('should close modal when close button is clicked', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    const nav = screen.getByRole('navigation')
-    await user.click(within(nav).getByRole('button', { name: /^about$/i }))
-    expect(screen.getByRole('dialog')).toBeInTheDocument()
-
-    await user.click(screen.getByRole('button', { name: /close dialog/i }))
-    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
-  })
-
-  it('should keep the contact modal open after using the footer contact link', async () => {
-    const user = userEvent.setup()
-    render(<App />)
-
-    const footer = screen.getByText(/all rights reserved/i).closest('footer')
-    await user.click(within(footer).getByRole('link', { name: /^contact us$/i }))
-    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
-
-    expect(screen.getByRole('heading', { name: /^contact us$/i })).toBeInTheDocument()
-  })
-
-  it('should render hero and feature content', () => {
-    render(<App />)
-
     expect(screen.getByRole('heading', { name: /reach your goals with goodhealthmate/i })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: /food tracking/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /every screen, designed to keep you on track/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /food tracking that takes seconds/i })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /^how it works$/i })).toBeInTheDocument()
+    expect(screen.getByAltText(/home dashboard/i)).toHaveAttribute('src', expect.stringContaining('scr-home.jpg'))
   })
 
-  it('should render the hero image with correct alt text', () => {
+  it('wires every download action and the QR card to the App Store', () => {
     render(<App />)
+    const links = screen.getAllByRole('link', { name: /app store/i })
+    expect(links.length).toBeGreaterThanOrEqual(4)
+    links.forEach((link) => expect(link).toHaveAttribute('href', APP_STORE_URL))
+  })
 
-    const heroImage = screen.getByAltText(/healthy meal prep/i)
-    expect(heroImage).toBeInTheDocument()
-    expect(heroImage).toHaveAttribute('src', expect.stringContaining('unsplash.com'))
+  it('shows the approved footer details and omits deferred content', () => {
+    render(<App />)
+    const footer = screen.getByRole('contentinfo')
+    expect(within(footer).getByText(/abn 29 677 871 686 · made in adelaide/i)).toBeInTheDocument()
+    expect(within(footer).getByRole('link', { name: 'support@goodhealthmate.com' })).toHaveAttribute('href', 'mailto:support@goodhealthmate.com')
+    expect(within(footer).getByRole('link', { name: /privacy policy/i })).toHaveAttribute('href', '/privacy/')
+    expect(within(footer).queryByText(/our story/i)).not.toBeInTheDocument()
+    expect(within(footer).queryByText(/help & faqs/i)).not.toBeInTheDocument()
+    expect(within(footer).queryByText(/terms of use/i)).not.toBeInTheDocument()
   })
 })
